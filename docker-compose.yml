@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  recommender-api:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - KAFKA_BOOTSTRAP_SERVERS=pkc-921jm.us-east-2.aws.confluent.cloud:9092
+      - KAFKA_API_KEY=HS3UITIOSZUTIUNX
+      - KAFKA_API_SECRET=cfltEDHcdIhlJeEoaafptwvHz2K6CqBMVb0bLr1twBC3cX9nVsG2vmybvILGCK1A
+      - MODEL_VERSION=v1.0
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/healthz"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  stream-ingestor:
+    build:
+      context: .
+      dockerfile: Dockerfile.ingestor
+    environment:
+      - KAFKA_BOOTSTRAP_SERVERS=pkc-921jm.us-east-2.aws.confluent.cloud:9092
+      - KAFKA_API_KEY=HS3UITIOSZUTIUNX
+      - KAFKA_API_SECRET=cfltEDHcdIhlJeEoaafptwvHz2K6CqBMVb0bLr1twBC3cX9nVsG2vmybvILGCK1A
+      - AWS_ACCESS_KEY_ID=7b00cb959fe9f54e67ff260ee40e2861
+      - AWS_SECRET_ACCESS_KEY=d813aa2acaa1c8b4c030ad365d70091c2331ea371a55287ff0bf6d692456228f
+      - S3_BUCKET=movierecommendationsystem
